@@ -282,8 +282,8 @@
       <li><strong>Healthy Coping Skills:</strong> Tools to manage stress and peer dynamics.</li>
       <li><strong>Real Stories:</strong> Voices from people who faced it and came out stronger.</li>
     </ul>
-    <p class="text-lg mt-8 text-white max-w-2xl">Here is a PDF for parents, educators, and schools:</p>
-    <a href="file:///Users/victoriatrain/Downloads/nKE7cZ2b3s.pdf" target="_blank" class="text-yellow-400 hover:underline">Download Curriculum PDF</a>
+    <p class="text-lg mt-4 text-white max-w-2xl">Here is a Curriculum Document:</p>
+    <a href="https://docs.google.com/document/d/1MhTXgIEJRYVtgKnbYb0RCate6X4ER2njjeMgzOTrpjg/edit?tab=t.0#heading=h.etkientosrye" target="_blank" class="text-yellow-400 hover:underline">Curriculum Document</a>
   </section>
 
   <!-- High on the Illusions Section -->
@@ -318,12 +318,7 @@
       <div class="card bg-gray-900 border-2 border-white rounded-xl p-8 font-semibold card-shadow hover:translate-y-[-6px] card-shadow-hover transition-all duration-300 cursor-default">
         <img src="https://www.sheknows.com/wp-content/uploads/2018/12/mother-and-teen-son-talking-in-kitchen_z5q3zj.jpeg" alt="Mother and teen son talking" class="mx-auto mb-4 rounded-full w-24 h-24 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/100x100/2A2A2A/FFC700?text=💬';" />
         <h3 class="font-montserrat font-bold text-2xl mb-3 text-white">Social Scripts</h3>
-        <p class="font-normal text-base text-gray-300 mb-2">Say no without sounding like a buzzkill. Try this:</p>
-        <ul class="list-disc list-inside text-gray-400">
-          <li>"Nah, I’m good, thanks!"</li>
-          <li>"I’m just focusing on my goals."</li>
-          <li>"I gotta stay fresh for tomorrow."</li>
-        </ul>
+        <p class="font-normal text-base text-gray-300 mb-2">Say no without sounding like a buzzkill. We got you.</p>
       </div>
 
       <!-- FOMO vs Self-Control -->
@@ -342,6 +337,19 @@
     <div id="our-story" class="card bg-gray-900 border-2 border-white rounded-xl p-8 font-semibold card-shadow hover:translate-y-[-6px] card-shadow-hover transition-all duration-300 w-full mt-8">
       <h3 class="font-montserrat font-bold text-2xl mb-3 text-white">Our Story: Three Teens, One Mission 🤝</h3>
       <p class="font-normal text-base text-gray-300 mb-4">Unfiltered started because three of us were tired of the mixed messages about drugs and peer pressure. We saw friends making choices based on bad info or just trying to fit in. We realized there wasn't a place for real, honest conversations without judgment or scare tactics. So, we decided to create it. This platform is our way of sharing facts, real stories, and practical tools to help young people navigate these pressures, stay true to themselves, and live authentically. We believe in empowering you with truth, not fear.</p>
+    </div>
+
+    <!-- New AI-Powered Peer Pressure Scenario Solver -->
+    <div id="peer-pressure-solver" class="card bg-gray-900 border-2 border-white rounded-xl p-8 font-semibold card-shadow hover:translate-y-[-6px] card-shadow-hover transition-all duration-300 w-full mt-8">
+      <h3 class="font-montserrat font-bold text-2xl mb-3 text-white">Peer Pressure Scenario Solver ✨</h3>
+      <p class="font-normal text-base text-gray-300 mb-4">Describe a peer pressure situation you're facing, and get advice on how to handle it.</p>
+      <textarea id="scenarioInput" class="w-full p-3 rounded-md bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-yellow-400 mb-4" rows="6" placeholder="e.g., 'My friends are pressuring me to go to a party where I know there will be alcohol, but I want to avoid it.'"></textarea>
+      <button id="solveScenarioBtn" class="bg-yellow-400 text-black font-bold py-2 px-4 rounded-md hover:bg-yellow-500 transition-colors duration-200 w-full flex items-center justify-center">
+        Get Peer Pressure Advice ✨
+        <div id="scenarioSpinner" class="spinner ml-2"></div>
+      </button>
+      <div id="scenarioOutput" class="mt-4 p-3 bg-gray-800 text-gray-200 rounded-md border border-gray-700 text-sm hidden"></div>
+      <div id="scenarioError" class="mt-2 text-red-400 text-sm hidden"></div>
     </div>
   </section>
 
@@ -425,7 +433,77 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Removed AI Social Script Generator Logic as per user request.
+        // Peer Pressure Scenario Solver Logic
+        const scenarioInput = document.getElementById('scenarioInput');
+        const solveScenarioBtn = document.getElementById('solveScenarioBtn');
+        const scenarioSpinner = document.getElementById('scenarioSpinner');
+        const scenarioOutput = document.getElementById('scenarioOutput');
+        const scenarioError = document.getElementById('scenarioError');
+
+        solveScenarioBtn.addEventListener('click', async () => {
+            const promptText = scenarioInput.value.trim();
+
+            if (!promptText) {
+                scenarioError.textContent = 'Please describe a scenario to get advice.';
+                scenarioError.classList.remove('hidden');
+                scenarioOutput.classList.add('hidden');
+                return;
+            }
+
+            scenarioSpinner.classList.add('show');
+            scenarioOutput.classList.add('hidden');
+            scenarioError.classList.add('hidden');
+            scenarioOutput.textContent = ''; // Clear previous output
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({
+                    role: "user",
+                    parts: [{
+                        text: `As a supportive and non-judgmental advisor for young people, provide practical and empathetic advice for the following peer pressure situation. Focus on healthy coping strategies, ways to politely decline or redirect, and how to maintain self-respect. Keep the response concise and actionable, under 150 words.
+
+                        Scenario: "${promptText}"`
+                    }]
+                });
+                const payload = { contents: chatHistory };
+                // In the Canvas environment, leave apiKey as an empty string.
+                // If you are running this code outside of the Canvas (e.g., on GitHub),
+                // you MUST replace "" with your actual Gemini API key.
+                // You can obtain one from Google AI Studio: https://aistudio.google.com/
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API error: ${response.status} ${response.statusText} - ${errorData.error.message}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    scenarioOutput.textContent = text;
+                    scenarioOutput.classList.remove('hidden');
+                } else {
+                    scenarioError.textContent = 'Could not generate advice for this scenario. Please try again.';
+                    scenarioError.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error generating scenario advice:', error);
+                scenarioError.textContent = `Failed to generate advice: ${error.message}. Please try again.`;
+                scenarioError.classList.remove('hidden');
+            } finally {
+                scenarioSpinner.classList.remove('show');
+            }
+        });
 
         // Hoodie Carousel Logic
         const hoodieImage = document.getElementById('hoodieImage');
